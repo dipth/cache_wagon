@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.version     = CacheWagon::VERSION
   s.authors     = ["Murui"]
   s.email       = ["thomas@dippel.dk"]
-  s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.homepage    = "https://github.com/murui/cache_wagon"
+  s.summary     = %q{Making your Rails 3 caching experience more fun!}
+  s.description = %q{Making your Rails 3 caching experience more fun!}
 
   s.rubyforge_project = "cache_wagon"
 
