@@ -1,5 +1,3 @@
-require "cache_wagon/version"
-
 module CacheWagon
-  # Your code goes here...
+  require 'cache_wagon/railtie' if defined?(Rails)
 end
