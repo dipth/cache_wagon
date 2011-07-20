@@ -11,6 +11,13 @@ module CacheWagon
       def cacheable_time_ago_in_words(date_with_timezone, include_seconds = false)
      	  "<span class=\"time_ago_in_words\" data-timestamp=\"#{date_with_timezone.utc}\" data-include-seconds=\"#{include_seconds}\">#{I18n.l(date_with_timezone, :format => :short)}</span>".html_safe
       end
+      
+      def cacheable_dynamic_block(owner_id, options = {}, &block)
+        style = options[:style].nil? ? 'display: none;' : options[:style]
+        content_tag(:span, :class => options[:class], :'data-owner-id' => owner_id, :style => style) do
+          capture(&block)
+        end
+      end
     end
   end
 end
