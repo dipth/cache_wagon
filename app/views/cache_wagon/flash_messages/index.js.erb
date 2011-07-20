@@ -1,0 +1,3 @@
+<%- @flash_messages.each do |key, msg| -%>
+display_flash_message("<%= escape_javascript(key.to_s.capitalize) %>", "<%= escape_javascript(msg) %>");
+<%- end -%>

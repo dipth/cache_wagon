@@ -17,15 +17,22 @@ In your gemfile:
 
     gem 'cache_wagon'
 
-Then run the installation-generator, which will add the required javascript-files to your public/javascripts folder
+cache_wagon includes an engine that serves some required javascript-files.
+These files are:
 
-    rails generate cache_wagon:install
+* /javascripts/date.js
+* /javascripts/cache_wagon.js
+
+If you ever need to override the functionality of these files, you can simply create files with the same name in your app's public javascript directory.
+You can also run the asset-generator to copy the javascript-files to your apps javascript directory:
+
+    rails generate cache_wagon:assets
 
 cache_wagon automatically gets included in the :defaults javascript expansion, so you should have the following in your layout:
 
     <%= javascript_include_tag :defaults %>
 
-If you instead wish to include the javascript-files manually, you will this in your layout instead:
+If you instead wish to include the javascript-files manually, you will need to put this in your layout instead:
 
     <%= javascript_include_tag 'locales','date','cache_wagon' %>
 
@@ -86,7 +93,37 @@ To use this feature, all you have to do, is to add the following before_filter t
 
     after_filter :write_flash_to_session
 
-**Here is an example:**
+You then have two options to actually read and render the flash-messages to the client.
+Either by creating your own controller that listens for an AJAX request and reads out the messages by using the read_flash_from_session method and renders them in some way, or by making an AJAX-request to the cache_wagon engine.
+
+Using the cache_wagon engine
+----------------------------
+
+To use the cache_wagon engine, put the following in your application.js
+
+    $(function() {
+      $.get('/cache_wagon/flash_messages');
+    });
+
+The engine will respond with some javascript, that calls a display_flash_message javascript-method.
+It will be up to you to implement this method in your application.js file.
+
+Here is an example of how the method could look:
+
+    function display_flash_message(key, message) {
+      $('<p class="notification notification' + key + ' copyPrimary" style="display:none">' + message + '</p>').appendTo('#flash_messages').slideDown("slow");
+    }
+
+How you choose to render the flash-messages is completely up to you.
+
+Rolling your own controller
+---------------------------
+
+The fewer requests that hit your server the better, and so you may want to keep the number of requests to a minimum.
+If you already have another AJAX-request that gets called on every page-load, you can take advantage of this request, and add some extra logic to the controller that handles the request, to make it include the flash-messages.
+Thus avoiding an extra request.
+
+How you implement this is up to you, but here is an example:
 
 Let's say that we have a HTTP-cached page, that needs to render a dynamic menu that changes depending on the users login-status.
 We have already set an AJAX request in place to load this menu from our server on every request.
@@ -95,12 +132,6 @@ The server has a js.erb template, where we can simply add the following:
     <%- read_flash_from_session.each do |key, msg| -%>
     display_flash_message("<%= escape_javascript(key.to_s.capitalize) %>", "<%= escape_javascript(msg) %>");
     <%- end -%>
-
-This will call the following piece of javascript, that renders the messages into an empty div on our page:
-
-    function display_flash_message(key, message) {
-      $('<p class="notification notification' + key + ' copyPrimary" style="display:none">' + message + '</p>').appendTo('#flash_messages').slideDown("slow");
-    }
 
 How you choose to render the flash-messages is completely up to you.
 
