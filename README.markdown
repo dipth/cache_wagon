@@ -8,7 +8,7 @@ Requirements
 
 * Rails 3.x (Not tested with Rails 3.1)
 * Jquery
-* gem 'babilu'
+* The [Babilu](https://github.com/toretore/babilu) gem
 
 Installation
 ------------
