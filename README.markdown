@@ -44,6 +44,7 @@ Currently cache_wagon has the following utilities:
 
 * cacheable_time_ago_in_words
 * cacheable flash messages
+* cacheable_dynamic_block
 
 Each will be described in the following sections.
 
@@ -102,3 +103,28 @@ This will call the following piece of javascript, that renders the messages into
     }
 
 How you choose to render the flash-messages is completely up to you.
+
+Cacheable Dynamic Block
+=======================
+Another common issue with caching, is what if your page contains administration links like 'edit' and 'delete' links for each post on a blog and you want to displace these links only to users of relevance (i.e. admins). It is easy to make a check in your code to see if the current user is an administrator and thus allowed to see the links. But what happens when your page is fully cached?
+
+What we do, is to move our role check to a before_filter in the controller instead, to make sure that a user that isn't an administrator can't access the edit/update/destroy actions. And then in the view we display the links with their style attribute set to 'display: none' and show the links using a bit of javascript.
+
+This is what cacheable_dynamic_block can help you with.
+
+**Example:**
+Let's use the post-view on a blog as the example
+
+    cacheable_dynamic_block(@post.user.id, :class => 'owner-links') do
+      link_to 'edit', edit_admin_post(@post)
+    end
+
+Will produce:
+
+    <span class="owner-links" data-owner-id="1" style="display: none;">
+      <a href="/posts/2/comments/35/edit">Edit</a>
+    </span>
+    
+Now we need a way to show these links to the right users. In the js.erb template described in the previous step "Cacheable Flash Messages" (that gets loaded from our server on every request), we will call our javascript function that will handle what dynamic blocks to display to the user.
+
+    displayCacheableDynamicBlocks('.owner-links', <%= current_user? ? current_user.id : '' %>, <%= current_user? ? current_user.is_admin? : false %>)
