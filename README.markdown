@@ -81,6 +81,10 @@ Instead of this approach, cache-wagon will upon every request, store any flash-m
 cache_wagon provides the read_flash_from_session method which works just like the flash-hash, by returning a hash of all the stored flash-messages, and then clears the messages.
 You can then use a second AJAX request to your server, to render these messages out to the client.
 
+To use this feature, all you have to do, is to add the following before_filter to application.rb or any controller that writes flash-messages that needs to be cacheable.
+
+    after_filter :write_flash_to_session
+
 **Here is an example:**
 
 Let's say that we have a HTTP-cached page, that needs to render a dynamic menu that changes depending on the users login-status.
@@ -98,6 +102,3 @@ This will call the following piece of javascript, that renders the messages into
     }
 
 How you choose to render the flash-messages is completely up to you.
-
-**Notice**
-If you do not wish to use this functionality, you still need to use the read_flash_from_session method when reading flash-messages, as cache_wagon will automatically remove the messages from the built-in flash-hash when the gem is installed.
